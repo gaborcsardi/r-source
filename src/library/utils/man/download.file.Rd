@@ -48,6 +48,11 @@ download.file(url, destfile, method, quiet = FALSE, mode = "w",
   \item{extra}{character vector of additional command-line arguments for
     the \code{"wget"} and \code{"curl"} methods.}
 
+  \item{headers}{character vector, HTTP headers to send with the
+    request(s) if the \code{"libcurl"} method is used. It is ignored
+    silently for other methods. If it includes \code{"User-Agent"},
+    then it overrides the \code{HTTPUserAgent} option.}
+
   \item{\dots}{allow additional arguments to be passed, unused.}
 }
 \details{

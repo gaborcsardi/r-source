@@ -469,7 +469,7 @@ in_do_curlDownload(SEXP call, SEXP op, SEXP args, SEXP rho)
     error(_("download.file(method = \"libcurl\") is not supported on this platform"));
     return R_NilValue;
 #else
-    SEXP scmd, sfile, smode;
+    SEXP scmd, sfile, smode, sheaders;
     const char *url, *file, *mode;
     int quiet, cacheOK;
     struct curl_slist *slist1 = NULL;
@@ -490,9 +490,18 @@ in_do_curlDownload(SEXP call, SEXP op, SEXP args, SEXP rho)
     if (!isString(smode) || length(smode) != 1)
 	error(_("invalid '%s' argument"), "mode");
     mode = CHAR(STRING_ELT(smode, 0));
-    cacheOK = asLogical(CAR(args));
+    cacheOK = asLogical(CAR(args)); args = CDR(args);
     if (cacheOK == NA_LOGICAL)
 	error(_("invalid '%s' argument"), "cacheOK");
+    sheaders = CAR(args);
+    if (!isString(sheaders))
+        error(_("invalid '%s' argument"), "headers");
+    int nheaders = length(sheaders);
+
+    for (int i = 0; i < nheaders; i++) {
+      if (STRING_ELT(sheaders, i) == NA_STRING)
+	error(_("invalid '%s' argument"), "headers");
+    }
 
     /* This comes mainly from curl --libcurl on the call used by
        download.file(method = "curl").
@@ -503,6 +512,10 @@ in_do_curlDownload(SEXP call, SEXP op, SEXP args, SEXP rho)
 	/* This _is_ the right way to do this: see §14.9 of
 	   http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html */
 	slist1 = curl_slist_append(slist1, "Pragma: no-cache");
+    }
+
+    for(int i = 0; i < nheaders; i++) {
+      slist1 = curl_slist_append(slist1, CHAR(STRING_ELT(sheaders, i)));
     }
 
     CURLM *mhnd = curl_multi_init();
@@ -521,7 +534,7 @@ in_do_curlDownload(SEXP call, SEXP op, SEXP args, SEXP rho)
 #if (LIBCURL_VERSION_MINOR >= 25)
 	curl_easy_setopt(hnd[i], CURLOPT_TCP_KEEPALIVE, 1L);
 #endif
-	if (!cacheOK)
+	if (!cacheOK || nheaders > 0)
 	    curl_easy_setopt(hnd[i], CURLOPT_HTTPHEADER, slist1);
 
 	/* check that destfile can be written */

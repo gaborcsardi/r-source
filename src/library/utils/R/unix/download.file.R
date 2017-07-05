@@ -18,7 +18,8 @@
 
 download.file <-
     function(url, destfile, method, quiet = FALSE, mode = "w",
-             cacheOK = TRUE, extra = getOption("download.file.extra"), ...)
+             cacheOK = TRUE, extra = getOption("download.file.extra"),
+             headers = character(), ...)
 {
     destfile # check supplied
     method <- if (missing(method))
@@ -40,7 +41,7 @@ download.file <-
 	       if(!quiet) flush.console()
 	   },
 	   "libcurl" = {
-	       status <- .Internal(curlDownload(url, destfile, quiet, mode, cacheOK))
+               status <- .Internal(curlDownload(url, destfile, quiet, mode, cacheOK, headers))
 	       if(!quiet) flush.console()
 	   },
 	   "wget" = {
