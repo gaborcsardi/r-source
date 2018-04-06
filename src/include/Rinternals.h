@@ -859,6 +859,7 @@ LibExtern SEXP	R_DotsSymbol;	    /* "..." */
 LibExtern SEXP	R_DoubleColonSymbol;// "::"
 LibExtern SEXP	R_DropSymbol;	    /* "drop" */
 LibExtern SEXP	R_LastvalueSymbol;  /* ".Last.value" */
+LibExtern SEXP	R_LasterrorSymbol;  /* ".Last.error" */
 LibExtern SEXP	R_LevelsSymbol;	    /* "levels" */
 LibExtern SEXP	R_ModeSymbol;	    /* "mode" */
 LibExtern SEXP	R_NaRmSymbol;	    /* "na.rm" */

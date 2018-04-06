@@ -1079,6 +1079,8 @@ static void SymbolShortcuts(void)
        where complex assignments are not allowed.  */
     R_LastvalueSymbol = install(".Last.value");
     DISABLE_REFCNT(R_LastvalueSymbol);
+    R_LasterrorSymbol = install(".Last.error");
+    DISABLE_REFCNT(R_LasterrorSymbol);
 
     R_LevelsSymbol = install("levels");
     R_ModeSymbol = install("mode");
