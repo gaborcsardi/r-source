@@ -1641,6 +1641,7 @@ static void RunGenCollect(R_size_t size_needed)
     FORWARD_NODE(R_BaseEnv);
     FORWARD_NODE(R_EmptyEnv);
     FORWARD_NODE(R_Warnings);	           /* Warnings, if any */
+    FORWARD_NODE(R_LastError);
     FORWARD_NODE(R_ReturnedValue);
 
     FORWARD_NODE(R_HandlerStack);          /* Condition handler stack */

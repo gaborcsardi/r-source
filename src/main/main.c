@@ -888,6 +888,7 @@ void setup_Rmainloop(void)
     R_ExitContext = NULL;
 
     R_Warnings = R_NilValue;
+    R_LastError = R_NilValue;
 
     /* This is the same as R_BaseEnv, but this marks the environment
        of functions as the namespace and not the package. */
@@ -1076,8 +1077,11 @@ void run_Rmainloop(void)
 {
     /* Here is the real R read-eval-loop. */
     /* We handle the console until end-of-file. */
-    if (SETJMP(R_Toplevel.cjmpbuf))
+    if (SETJMP(R_Toplevel.cjmpbuf)) {
+	SET_SYMVALUE(R_LasterrorSymbol, R_LastError);
+	R_LastError = R_NilValue;
 	check_session_exit();
+    }
     R_GlobalContext = R_ToplevelContext = R_SessionContext = &R_Toplevel;
     R_ReplConsole(R_GlobalEnv, 0, 0);
     end_Rmainloop(); /* must go here */

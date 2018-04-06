@@ -756,6 +756,7 @@ extern void 	R_setupHistory(void);
 
 /* Warnings/Errors */
 extern0 int	R_CollectWarnings INI_as(0);	/* the number of warnings */
+extern0 SEXP    R_LastError;	    /* To pass the error back to the REPL */
 extern0 SEXP	R_Warnings;	    /* the warnings and their calls */
 extern0 int	R_ShowErrorMessages INI_as(1);	/* show error messages? */
 extern0 SEXP	R_HandlerStack;	/* Condition handler stack */

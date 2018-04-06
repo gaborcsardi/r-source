@@ -1692,7 +1692,7 @@ static void vsignalError(SEXP call, const char *format, va_list ap)
       PROTECT(hcall = LCONS(qcall, R_NilValue));
       hcall = LCONS(mkString(localbuf), hcall);
       PROTECT(hcall = LCONS(hooksym, hcall));
-      SET_SYMVALUE(R_LasterrorSymbol, eval(hcall, R_GlobalEnv));
+      R_LastError = eval(hcall, R_GlobalEnv);
       UNPROTECT(4);
     }
 
@@ -1753,7 +1753,7 @@ SEXP attribute_hidden do_signalCondition(SEXP call, SEXP op, SEXP args, SEXP rho
     }
     R_HandlerStack = oldstack;
 
-    if (inherits(cond, "error")) SET_SYMVALUE(R_LasterrorSymbol, cond);
+    if (inherits(cond, "error")) R_LastError = cond;
     UNPROTECT(1);
     return R_NilValue;
 }
