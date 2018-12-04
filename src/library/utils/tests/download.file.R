@@ -57,6 +57,31 @@ tests <- function() {
   stopifnot(any(grepl("Foo.*bar", h)))
   stopifnot(any(grepl("Zzzz.*bee", h)))
 
+  cat("- Basic auth\n")
+  ret <- tryCatch({
+    h <- suppressWarnings(get_headers(
+      "basic-auth/Aladdin/OpenSesame",
+      headers = c(Authorization = "Basic QWxhZGRpbjpPcGVuU2VzYW1l")))
+    TRUE
+  }, error = function(e) FALSE)
+  stopifnot(any(grepl("authenticated.*true", h)))
+
+  if (getOption("download.file.method") == "libcurl") {
+    cat("- Multiple urls (libcurl only)\n")
+    urls <- get_path(c("anything", "headers"))
+    tmp1 <- tempfile()
+    tmp2 <- tempfile()
+    on.exit(unlink(c(tmp1, tmp2)), add = TRUE)
+    download.file(urls, c(tmp1, tmp2), quiet = TRUE,
+                  headers = c(foo = "bar", zzzz = "bee"))
+    h1 <- readLines(tmp1)
+    h2 <- readLines(tmp2)
+    stopifnot(any(grepl("Foo.*bar", h1)))
+    stopifnot(any(grepl("Zzzz.*bee", h1)))
+    stopifnot(any(grepl("Foo.*bar", h2)))
+    stopifnot(any(grepl("Zzzz.*bee", h2)))
+  }
+
   if (getOption("download.file.method", "") != "internal") {
     cat("- HTTPS\n")
     h <- get_headers(headers = c(foo = "bar", zzzz = "bee"),
