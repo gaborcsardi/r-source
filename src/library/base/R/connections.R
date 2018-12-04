@@ -99,7 +99,7 @@ url <- function(description, open = "", blocking = TRUE,
       if (length(names(headers)) != length(headers) || any(names(headers) == ""))
         stop("'headers' must must have names")
       headers <- paste0(names(headers), ": ", headers)
-      headers <- list(headers, paste(headers, "\r\n", collapse = ""))
+      headers <- list(headers, paste0(headers, "\r\n", collapse = ""))
     }
     .Internal(url(description, open, blocking, encoding, method, headers))
 }
