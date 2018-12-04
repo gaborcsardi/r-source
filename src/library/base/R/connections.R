@@ -91,10 +91,17 @@ fifo <- function(description, open = "", blocking = FALSE,
 
 url <- function(description, open = "", blocking = TRUE,
                 encoding = getOption("encoding"),
-                method = getOption("url.method", "default"))
+                method = getOption("url.method", "default"),
+                headers = NULL)
 {
     method <- match.arg(method, c("default", "internal", "libcurl", "wininet"))
-    .Internal(url(description, open, blocking, encoding, method))
+    if (!is.null(headers)) {
+      if (length(names(headers)) != length(headers) || any(names(headers) == ""))
+        stop("'headers' must must have names")
+      headers <- paste0(names(headers), ": ", headers)
+      headers <- list(headers, paste(headers, "\r\n", collapse = ""))
+    }
+    .Internal(url(description, open, blocking, encoding, method, headers))
 }
 
 gzfile <- function(description, open = "",

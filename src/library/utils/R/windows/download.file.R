@@ -18,7 +18,8 @@
 
 download.file <-
     function(url, destfile, method, quiet = FALSE, mode = "w",
-             cacheOK = TRUE, extra = getOption("download.file.extra"), ...)
+             cacheOK = TRUE, extra = getOption("download.file.extra"),
+             headers = NULL, ...)
 {
     destfile # check supplied
     method <- if (missing(method))
@@ -38,13 +39,23 @@ download.file <-
             else "wininet"
     }
 
+    if (length(names(headers)) != length(headers) || any(names(headers) == ""))
+      stop("'headers' must must have names")
+
     switch(method,
 	   "internal" =, "wininet" = {
-	       status <- .External(C_download, url, destfile, quiet, mode, cacheOK,
-				   method == "wininet")
+               if (!is.null(headers)) {
+                   headers <- paste0(names(headers), ": ", headers, "\r\n", collapse = "")
+               }
+               status <- .External(C_download, url, destfile, quiet, mode, cacheOK,
+				   headers, method == "wininet")
 	   },
 	   "libcurl" = {
-	       status <- .Internal(curlDownload(url, destfile, quiet, mode, cacheOK))
+               if (!is.null(headers)) {
+                   headers <- paste0(names(headers), ": ", headers)
+               }
+               status <- .Internal(curlDownload(url, destfile, quiet, mode, cacheOK,
+                                                headers))
 	   },
 	   "wget" = {
 	       if(length(url) != 1L || typeof(url) != "character")

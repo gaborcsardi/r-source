@@ -36,6 +36,7 @@ typedef enum {HTTPsh, FTPsh, HTTPSsh, FTPSsh} UrlScheme;
 typedef struct urlconn {
     void *ctxt;
     UrlScheme type;
+    char *headers;
 } *Rurlconn;
 
 /* used in internet module */
@@ -67,7 +68,7 @@ Rconnection getConnection_no_err(int n);
 Rboolean switch_stdout(int icon, int closeOnExit);
 void init_con(Rconnection new, const char *description, int enc,
 	      const char * const mode);
-Rconnection R_newurl(const char *description, const char * const mode, int type);
+Rconnection R_newurl(const char *description, const char * const mode, SEXP headers, int type);
 Rconnection R_newsock(const char *host, int port, int server, const char * const mode, int timeout);
 Rconnection in_R_newsock(const char *host, int port, int server, const char *const mode, int timeout);
 Rconnection R_newunz(const char *description, const char * const mode);
