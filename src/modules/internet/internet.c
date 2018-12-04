@@ -52,7 +52,7 @@ static int   in_R_HTTPRead2(void *ctx, char *dest, int len);
 static void  in_R_HTTPClose2(void *ctx);
 static void *in_R_FTPOpen2(const char *url);
 
-#define Ri_HTTPOpen(url, agent  headers, cacheOK) \
+#define Ri_HTTPOpen(url, agent, headers, cacheOK)	   \
     (meth ? in_R_HTTPOpen2(url, agent, headers, cacheOK) : \
        in_R_HTTPOpen(url, agent, headers, cacheOK));
 
