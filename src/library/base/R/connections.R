@@ -96,8 +96,9 @@ url <- function(description, open = "", blocking = TRUE,
 {
     method <- match.arg(method, c("default", "internal", "libcurl", "wininet"))
     if (!is.null(headers)) {
-      if (length(names(headers)) != length(headers) || any(names(headers) == ""))
-        stop("'headers' must must have names")
+      if (length(names(headers)) != length(headers) ||
+          any(names(headers) == "") || anyNA(headers) || anyNA(names(headers)))
+        stop("'headers' must must have names and must not be NA")
       headers <- paste0(names(headers), ": ", headers)
       headers <- list(headers, paste0(headers, "\r\n", collapse = ""))
     }

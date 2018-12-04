@@ -70,9 +70,20 @@ tests <- function() {
     download.file(get_path(), headers = c("foo", "xxx" = "bar")),
     error = function(err) TRUE)
   stopifnot(isTRUE(ret))
-
   ret <- tryCatch(
     download.file(get_path(), headers = "foobar"),
+    error = function(err) TRUE)
+  stopifnot(isTRUE(ret))
+
+  cat("- If headers are NA, then error\n")
+  ret <- tryCatch(
+    download.file(get_path(), headers = c("foo" = NA, "xxx" = "bar")),
+    error = function(err) TRUE)
+  stopifnot(isTRUE(ret))
+  ret <- tryCatch(
+    download.file(
+      get_path(), quiet = TRUE,
+      headers = structure(c("foo", "bar", names = c("foo", NA)))),
     error = function(err) TRUE)
   stopifnot(isTRUE(ret))
 
@@ -91,6 +102,17 @@ tests <- function() {
   cat("- If headers not named, then url() errors\n")
   ret <- tryCatch(
     url(get_path(), headers = c("foo", "xxx" = "bar")),
+    error = function(err) TRUE)
+  stopifnot(isTRUE(ret))
+
+  cat("- If headers are NA, then url() errors\n")
+  ret <- tryCatch(
+    url(get_path(), headers = c("foo" = "bar", "xxx" = NA)),
+    error = function(err) TRUE)
+  stopifnot(isTRUE(ret))
+  ret <- tryCatch(
+    url(get_path(),
+        headers = structure(c("1", "2"), names = c("foo", NA))),
     error = function(err) TRUE)
   stopifnot(isTRUE(ret))
 

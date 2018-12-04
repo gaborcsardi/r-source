@@ -39,8 +39,9 @@ download.file <-
             else "wininet"
     }
 
-    if (length(names(headers)) != length(headers) || any(names(headers) == ""))
-      stop("'headers' must must have names")
+    if (length(names(headers)) != length(headers) ||
+        any(names(headers) == "") || anyNA(headers) || anyNA(names(headers)))
+        stop("'headers' must must have names and must not be NA")
 
     switch(method,
 	   "internal" =, "wininet" = {
