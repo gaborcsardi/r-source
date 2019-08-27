@@ -404,7 +404,6 @@ typedef union { VECTOR_SEXPREC s; double align; } SEXPREC_ALIGN;
 #define RAW(x)		((Rbyte *) DATAPTR(x))
 #define COMPLEX(x)	((Rcomplex *) DATAPTR(x))
 #define REAL(x)		((double *) DATAPTR(x))
-#define VECTOR_ELT(x,i)	((SEXP *) DATAPTR(x))[i]
 #define STRING_PTR(x)	((SEXP *) DATAPTR(x))
 #define VECTOR_PTR(x)	((SEXP *) DATAPTR(x))
 #define LOGICAL_RO(x)	((const int *) DATAPTR_RO(x))
