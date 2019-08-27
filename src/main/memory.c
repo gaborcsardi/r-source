@@ -81,6 +81,7 @@
 # endif
 #endif
 
+#define VECTOR_ELTP(x,i)        ((SEXP *) DATAPTR(x))[i]
 
 #define R_USE_SIGNALS 1
 #include <Defn.h>
@@ -700,7 +701,7 @@ static R_size_t R_NodesInUse = 0;
     { \
       R_xlen_t i; \
       for (i = 0; i < XLENGTH(__n__); i++) \
-	dc__action__(VECTOR_ELT(__n__, i), dc__extra__); \
+	dc__action__(VECTOR_ELTP(__n__, i), dc__extra__); \
     } \
     break; \
   case ENVSXP: \
@@ -1282,13 +1283,13 @@ static SEXP R_weak_refs = NULL;
 #define FINALIZE_ON_EXIT(s) ((s)->sxpinfo.gp & FINALIZE_ON_EXIT_MASK)
 
 #define WEAKREF_SIZE 4
-#define WEAKREF_KEY(w) VECTOR_ELT(w, 0)
+#define WEAKREF_KEY(w) VECTOR_ELTP(w, 0)
 #define SET_WEAKREF_KEY(w, k) SET_VECTOR_ELT(w, 0, k)
-#define WEAKREF_VALUE(w) VECTOR_ELT(w, 1)
+#define WEAKREF_VALUE(w) VECTOR_ELTP(w, 1)
 #define SET_WEAKREF_VALUE(w, v) SET_VECTOR_ELT(w, 1, v)
-#define WEAKREF_FINALIZER(w) VECTOR_ELT(w, 2)
+#define WEAKREF_FINALIZER(w) VECTOR_ELTP(w, 2)
 #define SET_WEAKREF_FINALIZER(w, f) SET_VECTOR_ELT(w, 2, f)
-#define WEAKREF_NEXT(w) VECTOR_ELT(w, 3)
+#define WEAKREF_NEXT(w) VECTOR_ELTP(w, 3)
 #define SET_WEAKREF_NEXT(w, n) SET_VECTOR_ELT(w, 3, n)
 
 static SEXP MakeCFinalizer(R_CFinalizer_t cfun);
@@ -1788,12 +1789,12 @@ static int RunGenCollect(R_size_t size_needed)
 	SEXP t;
 	int nc = 0;
 	for (i = 0; i < LENGTH(R_StringHash); i++) {
-	    s = VECTOR_ELT(R_StringHash, i);
+	    s = VECTOR_ELTP(R_StringHash, i);
 	    t = R_NilValue;
 	    while (s != R_NilValue) {
 		if (! NODE_IS_MARKED(CXHEAD(s))) { /* remove unused CHARSXP and cons cell */
 		    if (t == R_NilValue) /* head of list */
-			VECTOR_ELT(R_StringHash, i) = CXTAIL(s);
+                        VECTOR_ELTP(R_StringHash, i) = CXTAIL(s);
 		    else
 			CXTAIL(t) = CXTAIL(s);
 		    s = CXTAIL(s);
@@ -1804,7 +1805,7 @@ static int RunGenCollect(R_size_t size_needed)
 		t = s;
 		s = CXTAIL(s);
 	    }
-	    if(VECTOR_ELT(R_StringHash, i) != R_NilValue) nc++;
+	    if(VECTOR_ELTP(R_StringHash, i) != R_NilValue) nc++;
 	}
 	SET_TRUELENGTH(R_StringHash, nc); /* SET_HASHPRI, really */
     }
