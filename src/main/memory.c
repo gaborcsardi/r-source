@@ -3934,7 +3934,10 @@ SEXP (VECTOR_ELT)(SEXP x, R_xlen_t i) {
        TYPEOF(x) != WEAKREFSXP)
 	error("%s() can only be applied to a '%s', not a '%s'",
 	      "VECTOR_ELT", "list", type2char(TYPEOF(x)));
-    return CHK(((SEXP*)DATAPTR(x))[i]);
+    if (ALTREP(x))
+        return CHK(ALTLIST_ELT(CHK(x), i));
+    else
+        return CHK(((SEXP*)DATAPTR(x))[i]);
 }
 
 #ifdef CATCH_ZERO_LENGTH_ACCESS
@@ -4099,7 +4102,11 @@ SEXP (SET_VECTOR_ELT)(SEXP x, R_xlen_t i, SEXP v) {
 	      (long long)i, (long long)XLENGTH(x));
     FIX_REFCNT(x, VECTOR_ELTP(x, i), v);
     CHECK_OLD_TO_NEW(x, v);
-    return VECTOR_ELTP(x, i) = v;
+    if (ALTREP(x))
+        ALTLIST_SET_ELT(x, i, v);
+    else
+      ((SEXP*)DATAPTR(x))[i] = v;
+    return v;
 }
 
 /* check for a CONS-like object */

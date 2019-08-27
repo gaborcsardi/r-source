@@ -677,6 +677,8 @@ Rcomplex ALTCOMPLEX_ELT(SEXP x, R_xlen_t i);
 void ALTCOMPLEX_SET_ELT(SEXP x, R_xlen_t i, Rcomplex v);
 Rbyte ALTRAW_ELT(SEXP x, R_xlen_t i);
 void ALTRAW_SET_ELT(SEXP x, R_xlen_t i, Rbyte v);
+SEXP ALTLIST_ELT(SEXP, R_xlen_t);
+void ALTLIST_SET_ELT(SEXP, R_xlen_t, SEXP);
 
 /* invoking ALTREP class methods */
 SEXP ALTINTEGER_SUM(SEXP x, Rboolean narm);
