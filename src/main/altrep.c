@@ -1087,6 +1087,19 @@ static void reinit_altrep_class(SEXP class)
 	m->MNAME = fun;							\
     }
 
+
+#define DEFINE_METHOD_SETTER_NOLIST(CNAME, MNAME)                       \
+    void R_set_##CNAME##_##MNAME##_method(R_altrep_class_t cls,         \
+                                          R_##CNAME##_##MNAME##_method_t fun) \
+    {                                                                   \
+        CNAME##_methods_t *m = CLASS_METHODS_TABLE(R_SEXP(cls));        \
+        if (m->MNAME == altlist_##MNAME##_default) {                    \
+            error("ALTLIST classes do not have a ##MNAME## method");    \
+        } else {                                                        \
+            m->MNAME = fun;                                             \
+        }                                                               \
+    }
+
 DEFINE_METHOD_SETTER(altrep, UnserializeEX)
 DEFINE_METHOD_SETTER(altrep, Unserialize)
 DEFINE_METHOD_SETTER(altrep, Serialized_state)
@@ -1096,8 +1109,8 @@ DEFINE_METHOD_SETTER(altrep, Coerce)
 DEFINE_METHOD_SETTER(altrep, Inspect)
 DEFINE_METHOD_SETTER(altrep, Length)
 
-DEFINE_METHOD_SETTER(altvec, Dataptr)
-DEFINE_METHOD_SETTER(altvec, Dataptr_or_null)
+DEFINE_METHOD_SETTER_NOLIST(altvec, Dataptr)
+DEFINE_METHOD_SETTER_NOLIST(altvec, Dataptr_or_null)
 DEFINE_METHOD_SETTER(altvec, Extract_subset)
 
 DEFINE_METHOD_SETTER(altinteger, Elt)
