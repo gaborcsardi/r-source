@@ -119,7 +119,7 @@ static Rboolean url_open(Rconnection con)
 	SEXP sagent, agentFun;
 	const char *agent;
 	SEXP s_makeUserAgent = install("makeUserAgent");
-	agentFun = PROTECT(lang1(s_makeUserAgent)); // defaults to ,TRUE
+	agentFun = PROTECT(lang3(s_makeUserAgent, ScalarLogical(1), mkString("internal")));
 	SEXP utilsNS = PROTECT(R_FindNamespace(mkString("utils")));
 	struct urlconn *uc = con->private;
 	sagent = eval(agentFun, utilsNS);
@@ -247,7 +247,7 @@ static Rboolean url_open2(Rconnection con)
 	const char *agent;
 	SEXP s_makeUserAgent = install("makeUserAgent");
 	struct urlconn * uc = con->private;
-	agentFun = PROTECT(lang2(s_makeUserAgent, ScalarLogical(0)));
+	agentFun = PROTECT(lang3(s_makeUserAgent, ScalarLogical(0), mkString("internal")));
 	sagent = PROTECT(eval(agentFun, R_FindNamespace(mkString("utils"))));
 	if(TYPEOF(sagent) == NILSXP)
 	    agent = NULL;
@@ -562,11 +562,11 @@ static SEXP in_do_download(SEXP args)
 #ifdef Win32
 	R_FlushConsole();
 	if(meth)
-	    agentFun = PROTECT(lang2(install("makeUserAgent"), ScalarLogical(0)));
+            agentFun = PROTECT(lang3(install("makeUserAgent"), ScalarLogical(0), mkString("wininet")));
 	else
-	    agentFun = PROTECT(lang1(install("makeUserAgent")));
+            agentFun = PROTECT(lang3(install("makeUserAgent"), ScalarLogical(1), mkString("internal")));
 #else
-	agentFun = PROTECT(lang1(install("makeUserAgent")));
+	agentFun = PROTECT(lang3(install("makeUserAgent"), ScalarLogical(1), mkString("internal")));
 #endif
 	SEXP utilsNS = PROTECT(R_FindNamespace(mkString("utils")));
 	sagent = eval(agentFun, utilsNS);

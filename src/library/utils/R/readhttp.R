@@ -32,17 +32,20 @@ defaultUserAgent <- function()
     Rver <- paste(R.version$major, R.version$minor, sep=".")
     Rdetails <- paste(Rver, R.version$platform, R.version$arch,
                       R.version$os)
-    paste0("R (", Rdetails, ")")
+    gsub("%R", Rdetails, Sys.getenv("R_HTTP_USER_AGENT", "R (%R %M)"))
 }
 
 
-makeUserAgent <- function(format = TRUE) {
+makeUserAgent <- function(format = TRUE, method = NULL) {
     agent <- getOption("HTTPUserAgent")
-    if (is.null(agent)) {
+    if (is.null(agent) || identical(agent, "")) {
         return(NULL)
     }
     if (length(agent) != 1L)
         stop(gettextf("%s option must be a length one character vector or NULL",
                       sQuote("HTTPUserAgent")), domain = NA)
+
+    if (!is.null(method)) agent[1L] <- gsub("%M", method, agent[1L])
+
     if (format) paste0("User-Agent: ", agent[1L], "\r\n") else agent[1L]
 }

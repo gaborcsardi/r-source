@@ -63,7 +63,14 @@ download.file <-
 		   stop("'destfile' must be a length-one character vector");
 	       if(quiet) extra <- c(extra, "--quiet")
 	       if(!cacheOK) extra <- c(extra, "--cache=off")
+	       if(!is.null(headers)) {
+                   headers <- paste0(nh, ": ", headers)
+                   headers <- paste0("--header=", shQuote(headers), collapse = " ")
+               }
+               ua <- c(makeUserAgent(FALSE, "wget"), "")[1]
 	       status <- system(paste("wget",
+                                      "-U", shQuote(ua),
+                                      headers,
 				      paste(extra, collapse = " "),
 				      shQuote(url),
 				      "-O", shQuote(path.expand(destfile))))
@@ -76,7 +83,14 @@ download.file <-
 		   stop("'destfile' must be a length-one character vector");
 	       if(quiet) extra <- c(extra, "-s -S")
 	       if(!cacheOK) extra <- c(extra, paste("-H", shQuote("Pragma: no-cache")))
+	       if(!is.null(headers)) {
+                   headers <- paste0(nh, ": ", headers)
+                   headers <- paste0("--header ", shQuote(headers), collapse = " ")
+               }
+               ua <- c(makeUserAgent(FALSE, "curl"), "")[1]
 	       status <- system(paste("curl",
+                                      "-A", shQuote(ua),
+                                      headers,
 				      paste(extra, collapse = " "),
 				      shQuote(url),
 				      " -o", shQuote(path.expand(destfile))))

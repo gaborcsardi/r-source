@@ -650,9 +650,11 @@ getOption(x, default = NULL)
       HTTP(S) requests by \code{\link{download.file}}, \code{\link{url}}
       and \code{\link{curlGetHeaders}}, or \code{NULL} when requests will
       be made without a user agent header.  The default is
-      \code{R (<version> <platform> <arch> <os>)}
-      except when \samp{libcurl} is used when it is
-      \code{libcurl/7.<xx>.<y>} for the \samp{libcurl} version in use.}
+      \code{R (<version> <platform> <arch> <os> <download-method>)}.
+      If the \env{R_HTTP_USER_AGENT} environment variable is set, it is used
+      to initialize the option, with the \code{\%R} string replaced by
+      \code{<version> <platform> <arch> <os>}. The \code{\%M} string is
+      replaced by the download method, when the HTTP request is made.}
 
     \item{\code{install.lock}:}{logical: should per-directory package
       locking be used by \code{\link{install.packages}}?  Most useful
