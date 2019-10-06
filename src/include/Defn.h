@@ -694,6 +694,7 @@ LibExtern SEXP*	R_PPStack;	    /* The pointer protection stack */
 
 /* Evaluation Environment */
 extern0 SEXP	R_CurrentExpr;	    /* Currently evaluating expression */
+extern0 SEXP	R_ConsoleExpr;	    /* Top level console expression */
 extern0 SEXP	R_ReturnedValue;    /* Slot for return-ing values */
 extern0 SEXP*	R_SymbolTable;	    /* The symbol table */
 #ifdef R_USE_SIGNALS

@@ -200,7 +200,7 @@ int
 Rf_ReplIteration(SEXP rho, int savestack, int browselevel, R_ReplState *state)
 {
     int c, browsevalue;
-    SEXP value, thisExpr;
+    SEXP value;
     Rboolean wasDisplayed = FALSE;
 
     if(!*state->bufp) {
@@ -255,18 +255,19 @@ Rf_ReplIteration(SEXP rho, int savestack, int browselevel, R_ReplState *state)
 	R_Visible = FALSE;
 	R_EvalDepth = 0;
 	resetTimeLimits();
-	PROTECT(thisExpr = R_CurrentExpr);
+        PROTECT(R_ConsoleExpr = R_CurrentExpr);
 	R_Busy(1);
-	PROTECT(value = eval(thisExpr, rho));
+	PROTECT(value = eval(R_ConsoleExpr, rho));
 	SET_SYMVALUE(R_LastvalueSymbol, value);
 	wasDisplayed = R_Visible;
 	if (R_Visible)
 	    PrintValueEnv(value, rho);
 	if (R_CollectWarnings)
 	    PrintWarnings();
-	Rf_callToplevelHandlers(thisExpr, value, TRUE, wasDisplayed);
+	Rf_callToplevelHandlers(R_ConsoleExpr, value, TRUE, wasDisplayed);
 	R_CurrentExpr = value; /* Necessary? Doubt it. */
-	UNPROTECT(2); /* thisExpr, value */
+        R_ConsoleExpr = NULL;
+	UNPROTECT(2); /* R_ConsoleExpr, value */
 	if (R_BrowserLastCommand == 'S') R_BrowserLastCommand = 's';
 	R_IoBufferWriteReset(&R_ConsoleIob);
 	state->prompt_type = 1;
@@ -881,6 +882,7 @@ void setup_Rmainloop(void)
     InitS3DefaultTypes();
     PrintDefaults();
 
+    R_ConsoleExpr = NULL;
     R_Is_Running = 1;
     R_check_locale();
 
@@ -1586,7 +1588,7 @@ R_getTaskCallbackNames(void)
      Simple state to indicate that they are currently being run. */
 static Rboolean Rf_RunningToplevelHandlers = FALSE;
 
-/* This is not used in R and in no header */
+/* This is only used in errors.c currently */
 void
 Rf_callToplevelHandlers(SEXP expr, SEXP value, Rboolean succeeded,
 			Rboolean visible)

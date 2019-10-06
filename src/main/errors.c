@@ -1724,6 +1724,9 @@ static void NORET gotoExitingHandler(SEXP cond, SEXP call, SEXP entry)
     findcontext(CTXT_FUNCTION, rho, result);
 }
 
+void Rf_callToplevelHandlers(SEXP expr, SEXP value, Rboolean succeeded,
+			     Rboolean visible);
+
 static void vsignalError(SEXP call, const char *format, va_list ap)
 {
     char localbuf[BUFSIZE];
@@ -1765,6 +1768,20 @@ static void vsignalError(SEXP call, const char *format, va_list ap)
 	}
 	else gotoExitingHandler(R_NilValue, call, entry);
     }
+
+    /* Call task handlers */
+    SEXP hooksym, hcall, qcall, err;
+    PROTECT(oldstack);
+    hooksym = install("simpleError");
+    PROTECT(qcall = LCONS(R_QuoteSymbol,
+                          LCONS(call, R_NilValue)));
+    PROTECT(hcall = LCONS(qcall, R_NilValue));
+    hcall = LCONS(mkString(localbuf), hcall);
+    PROTECT(hcall = LCONS(hooksym, hcall));
+    PROTECT(err = eval(hcall, R_GlobalEnv));
+    Rf_callToplevelHandlers(R_ConsoleExpr, err, FALSE, TRUE);
+    UNPROTECT(5);
+
     R_HandlerStack = oldstack;
 }
 
@@ -1820,6 +1837,8 @@ SEXP attribute_hidden do_signalCondition(SEXP call, SEXP op, SEXP args, SEXP rho
 	}
 	else gotoExitingHandler(cond, ecall, entry);
     }
+    if (inherits(cond, "error"))
+        Rf_callToplevelHandlers(R_ConsoleExpr, cond, FALSE, TRUE);
     R_HandlerStack = oldstack;
     UNPROTECT(1);
     return R_NilValue;

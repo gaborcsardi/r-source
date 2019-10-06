@@ -74,6 +74,7 @@
  R_ConnIdSymbol
  R_ConsoleIob
  R_CurrentExpr
+ R_ConsoleExpr
  R_Decode2Long
  R_DevicesSymbol
  R_DisableNLinBrowser
