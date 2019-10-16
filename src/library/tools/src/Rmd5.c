@@ -19,6 +19,11 @@
 
 /* <UTF8> OK since this is intended to treat chars as byte streams */
 
+#ifdef HAVE_CONFIG_H
+# include <config.h>
+#endif
+#include <Defn.h>
+
 #include "tools.h"
 #define ROL_UNUSED
 #include "md5.h"
@@ -28,7 +33,6 @@ SEXP Rmd5(SEXP files)
 {
     SEXP ans;
     int i, j, nfiles = length(files), res;
-    const char *path;
     char out[33];
     FILE *fp;
     unsigned char resblock[16];
@@ -36,18 +40,17 @@ SEXP Rmd5(SEXP files)
     if(!isString(files)) error(_("argument 'files' must be character"));
     PROTECT(ans = allocVector(STRSXP, nfiles));
     for(i = 0; i < nfiles; i++) {
-	path = translateChar(STRING_ELT(files, i));
 #ifdef _WIN32
-	fp = fopen(path, "rb");
+        fp = RC_fopen(STRING_ELT(files, i), "rb", FALSE);
 #else
-	fp = fopen(path, "r");
+        fp = RC_fopen(STRING_ELT(files, i), "r", FALSE);
 #endif
 	if(!fp) {
 	    SET_STRING_ELT(ans, i, NA_STRING);
 	} else {
 	    res = md5_stream(fp, &resblock);
 	    if(res) {
-		warning(_("md5 failed on file '%s'"), path);
+              warning(_("md5 failed on file '%s'"), STRING_ELT(files, i));
 		SET_STRING_ELT(ans, i, NA_STRING);
 	    } else {
 		for(j = 0; j < 16; j++)
