@@ -40,9 +40,10 @@ with_options <- function(opts, expr) {
 
 tests <- function() {
   cat("- User agent is still set\n")
-  with_options(list(HTTPUserAgent = "foobar"), {
+  meth <- getOption("download.file.method")
+  with_options(list(HTTPUserAgent = "foobar %M"), {
     h <- get_headers()
-    stopifnot(any(grepl("User-Agent.*foobar", h)))
+    stopifnot(any(grepl(paste0("User-Agent.*foobar ", meth), h)))
   })
 
   with_options(list(HTTPUserAgent = "foobar"), {
@@ -51,6 +52,28 @@ tests <- function() {
     stopifnot(any(grepl("Foo.*bar", h)))
     stopifnot(any(grepl("Zzzz.*bee", h)))
   })
+
+  cat("- User agent is not sent when NULL\n")
+  with_options(list(HTTPUserAgent = NULL), {
+    h <- get_headers()
+    stopifnot(!any(grepl("User-Agent", h)))
+  })
+
+  cat("- User agent is not sent if it is the empty string\n")
+  with_options(list(HTTPUserAgent = ""), {
+    h <- get_headers()
+    stopifnot(!any(grepl("User-Agent", h)))
+  })
+
+  if (getOption("download.file.method") == "libcurl") {
+    cat("- libcurl version added to user agent for libcurl\n")
+    with_options(list(HTTPUserAgent = "foobar %M"), {
+      h <- get_headers()
+      ver <- libcurlVersion()[1]
+      exp <- sprintf("User-Agent.*foobar libcurl/%s", ver)
+      stopifnot(any(grepl(exp, h)))
+    })
+  }
 
   cat("- Can supply headers\n")
   h <- get_headers(headers = c(foo = "bar", zzzz = "bee"))
@@ -157,16 +180,32 @@ tests <- function() {
 
 main <- function() {
   cat("internal method\n")
-  with_options(c(download.file.method = "internal"), tests())
+  with_options(
+    c(download.file.method = "internal", url.method = "internal"),
+    tests())
 
   if (.Platform$OS.type == "windows")  {
     cat("\nwininet method\n")
-    with_options(c(download.file.method = "wininet"), tests())
+    with_options(
+      c(download.file.method = "wininet", url.method = "wininet"),
+      tests())
   }
 
   if (isTRUE(capabilities()[["libcurl"]])) {
     cat("\nlibcurl method\n")
-    with_options(c(download.file.method = "libcurl"), tests())
+    with_options(
+      c(download.file.method = "libcurl", url.method = "libcurl"),
+      tests())
+  }
+
+  if (Sys.which("wget") != "") {
+    cat("\nwget method\n")
+    with_options(c(download.file.method = "wget"), tests())
+  }
+
+  if (Sys.which("curl") != "") {
+    cat("\ncurl method\n")
+    with_options(c(download.file.method = "curl"), tests())
   }
 }
 
