@@ -6923,22 +6923,16 @@ given above.
 There are two other forms of optional argument specified as
 @code{\link[@var{pkg}]@{@var{foo}@}} and
 @code{\link[@var{pkg:bar}]@{@var{foo}@}} to link to the package
-@pkg{@var{pkg}}, to @emph{files} @file{@var{foo}.html} and
-@file{@var{bar}.html} respectively.  These are rarely needed, perhaps to
-refer to not-yet-installed packages (but there the @HTML{} help system
-will resolve the link at run time) or in the normally undesirable event
-that more than one package offers help on a topic@footnote{a common
-example in @acronym{CRAN} packages is @code{\link[mgcv]@{gam@}}.} (in
-which case the present package has precedence so this is only needed to
-refer to other packages).  They are currently only used in @HTML{} help
-(and ignored for hyperlinks in @LaTeX{} conversions of help pages), and
-link to the file rather than the topic (since there is no way to know
-which topics are in which files in an uninstalled package).  The
-@strong{only} reason to use these forms for base and recommended
-packages is to force a reference to a package that might be further down
-the search path.  Because they have been frequently misused, the @HTML{}
-help system looks for topic @code{@var{foo}} in package @pkg{@var{pkg}}
-if it does not find file @file{@var{foo}.html}.
+@pkg{@var{pkg}}, to @emph{topics} @var{foo} and @var{bar} respectively.
+While the @HTML{} help system automatically searches for topics in the
+loaded packages, it is good practice to specify packages explicitly,
+to reduce the risk that the incorrect help file is shown.
+
+Previously @code{\link[@var{pkg}]@{@var{foo}@}} and
+@code{\link[@var{pkg:bar}]@{@var{foo}@}} could only link to @emph{files}
+@file{@var{foo}.html} and @file{@var{bar}.html}.  For compatibility
+reasons the @HTML{} help system still picks up these files first, before
+searching for the topics.
 
 Packages referred to by these `other forms' should be declared in the
 @file{DESCRIPTION} file, in the @samp{Depends}, @samp{Imports},
