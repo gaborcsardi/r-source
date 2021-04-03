@@ -50,6 +50,8 @@ R_altrep_class_t
 R_make_altraw_class(const char *cname, const char *pname, DllInfo *info);
 R_altrep_class_t
 R_make_altcomplex_class(const char *cname, const char *pname, DllInfo *info);
+R_altrep_class_t
+R_make_altlist_class(const char *cname, const char *pname, DllInfo *info);
 
 Rboolean R_altrep_inherits(SEXP x, R_altrep_class_t);
 
@@ -105,6 +107,9 @@ typedef void (*R_altstring_Set_elt_method_t)(SEXP, R_xlen_t, SEXP);
 typedef int (*R_altstring_Is_sorted_method_t)(SEXP);
 typedef int (*R_altstring_No_NA_method_t)(SEXP);
 
+typedef SEXP (*R_altlist_Elt_method_t)(SEXP, R_xlen_t);
+typedef void (*R_altlist_Set_elt_method_t)(SEXP, R_xlen_t, SEXP);
+
 #define DECLARE_METHOD_SETTER(CNAME, MNAME)				\
     void								\
     R_set_##CNAME##_##MNAME##_method(R_altrep_class_t cls,		\
@@ -155,6 +160,9 @@ DECLARE_METHOD_SETTER(altstring, Elt)
 DECLARE_METHOD_SETTER(altstring, Set_elt)
 DECLARE_METHOD_SETTER(altstring, Is_sorted)
 DECLARE_METHOD_SETTER(altstring, No_NA)
+
+DECLARE_METHOD_SETTER(altlist, Elt)
+DECLARE_METHOD_SETTER(altlist, Set_elt)
 
 #ifdef  __cplusplus
 }
